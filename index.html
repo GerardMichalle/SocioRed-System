@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SocioRed - Sistema de Gestión</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="assets/img/icon-window.png">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="login-page">
+  <div class="login-bg">
+    <div class="login-grid"></div>
+    <div class="login-glow"></div>
+  </div>
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="logo-socio">SOCIO</span><span class="logo-red">RED</span>
+      <div class="login-tagline">Sistema de Gestión · Alto Trujillo</div>
+    </div>
+    <div class="login-form">
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" id="loginUser" placeholder="admin" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="loginPass" placeholder="••••••••">
+      </div>
+      <div id="loginError" class="login-error hidden">Credenciales incorrectas</div>
+      <button class="btn-login" onclick="doLogin()">Ingresar al Sistema</button>
+      <div class="login-hint">admin / admin123</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appPage" class="app hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-socio">SOCIO</span><span class="logo-red">RED</span>
+      <div class="sidebar-sub">Sistema de Gestión Internet</div>
+      <div class="sidebar-location">📍 Alto Trujillo - La Libertad</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" onclick="showPage('dashboard')" data-page="dashboard">
+        <ion-icon class="nav-icon" name="home-outline"></ion-icon> Dashboard
+      </a>
+      <a class="nav-item" onclick="showPage('clientes')" data-page="clientes">
+        <ion-icon name="people-outline"></ion-icon> Clientes
+      </a>
+      <a class="nav-item" onclick="showPage('pagos')" data-page="pagos">
+        <ion-icon name="cash-outline"></ion-icon> Pagos
+      </a>
+      <a class="nav-item" onclick="showPage('planes')" data-page="planes">
+        <ion-icon name="logo-reddit"></ion-icon> Planes
+      </a>
+      <a class="nav-item" onclick="showPage('antenas')" data-page="antenas">
+        <ion-icon name="wifi-outline"></ion-icon> Antenas
+      </a>
+      <a class="nav-item" onclick="showPage('reportes')" data-page="reportes">
+        <ion-icon name="newspaper-outline"></ion-icon>Reportes
+      </a>
+      <a class="nav-item" onclick="showPage('configuracion')" data-page="configuracion">
+        <ion-icon name="construct-outline"></ion-icon> Configuración
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="doLogout()">⏻ Cerrar Sesión</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="page-title" id="pageTitle">Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-date" id="topbarDate"></div>
+        <div class="topbar-user">👤 Administrador</div>
+      </div>
+    </div>
+
+    <!-- PAGES -->
+    <div class="pages">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div id="page-dashboard" class="page active">
+        <div class="stats-grid">
+          <div class="stat-card blue">
+            <div class="stat-icon"><ion-icon name="people-circle-outline"></ion-icon></div>
+            <div class="stat-info">
+              <div class="stat-num" id="stat-activos">0</div>
+              <div class="stat-label">Clientes Activos</div>
+            </div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-icon"><ion-icon name="warning-outline"></ion-icon></div>
+            <div class="stat-info">
+              <div class="stat-num" id="stat-deuda">0</div>
+              <div class="stat-label">Clientes con Deuda</div>
+            </div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon"><ion-icon name="card-outline"></ion-icon></div>
+            <div class="stat-info">
+              <div class="stat-num" id="stat-ingresos">S/ 0</div>
+              <div class="stat-label">Ingresos del Mes</div>
+            </div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-icon">📡</div>
+            <div class="stat-info">
+              <div class="stat-num" id="stat-antenas">0</div>
+              <div class="stat-label">Antenas Activas</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">Resumen de Clientes</div>
+            <div class="donut-wrap">
+              <svg viewBox="0 0 120 120" class="donut-chart" id="donutChart">
+                <circle cx="60" cy="60" r="45" fill="none" stroke="#1e293b" stroke-width="18"/>
+                <circle cx="60" cy="60" r="45" fill="none" stroke="#22c55e" stroke-width="18"
+                  stroke-dasharray="0 283" stroke-linecap="round"
+                  transform="rotate(-90 60 60)" id="donutGreen"/>
+                <circle cx="60" cy="60" r="45" fill="none" stroke="#ef4444" stroke-width="18"
+                  stroke-dasharray="0 283" stroke-linecap="round"
+                  transform="rotate(-90 60 60)" id="donutRed"/>
+              </svg>
+              <div class="donut-legend">
+                <div><span class="dot green"></span> Al día: <b id="leg-aldia">0</b></div>
+                <div><span class="dot red"></span> Con deuda: <b id="leg-deuda">0</b></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">Clientes por Sector</div>
+            <div class="bar-chart-wrap" id="barChart"></div>
+          </div>
+
+          <div class="card full-width">
+            <div class="card-header">Cola de Pagos Pendientes <span class="badge red" id="cola-badge">0</span></div>
+            <div class="queue-list" id="colaList">
+              <div class="empty-msg">Sin pagos pendientes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CLIENTES ===== -->
+      <div id="page-clientes" class="page">
+        <div class="page-actions">
+          <div class="search-bar">
+            <input type="text" id="searchCliente" placeholder="Buscar por nombre, DNI o teléfono..." oninput="buscarCliente()">
+            <button onclick="buscarCliente()">🔍 Buscar</button>
+          </div>
+          <div class="filter-bar">
+            <select id="filtroEstado" onchange="buscarCliente()">
+              <option value="">Todos</option>
+              <option value="Al día">Al día</option>
+              <option value="Con deuda">Con deuda</option>
+            </select>
+            <select id="filtroSector" onchange="buscarCliente()">
+              <option value="">Todos los sectores</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="abrirModalCliente()">+ Nuevo Cliente</button>
+        </div>
+        <div class="card">
+          <table class="data-table" id="tablaClientes">
+            <thead>
+              <tr><th>ID</th><th>Nombre</th><th>Sector</th><th>Plan</th><th>Estado</th><th>Antena</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="tbodyClientes"></tbody>
+          </table>
+          <div class="table-footer">
+            <span id="totalClientes">Total: 0 clientes</span>
+            <div class="pagination" id="paginacionClientes"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== DETALLE CLIENTE ===== -->
+      <div id="page-detalle" class="page">
+        <div class="page-actions">
+          <button class="btn-back" onclick="showPage('clientes')">← Volver</button>
+        </div>
+        <div class="detalle-grid">
+          <div class="card detalle-info">
+            <div class="card-header">Detalle del Cliente</div>
+            <div class="detalle-header">
+              <div class="avatar" id="det-avatar">👤</div>
+              <div>
+                <div class="det-nombre" id="det-nombre">-</div>
+                <span class="badge" id="det-estado-badge">-</span>
+                <div class="det-id" id="det-id">ID: -</div>
+                <div class="det-tel" id="det-tel">📞 -</div>
+              </div>
+            </div>
+            <div class="det-section">Información</div>
+            <div class="det-grid">
+              <div><label>Dirección</label><span id="det-dir">-</span></div>
+              <div><label>Plan Actual</label><span id="det-plan">-</span></div>
+              <div><label>Instalación</label><span id="det-fecha">-</span></div>
+              <div><label>Antena</label><span id="det-antena">-</span></div>
+              <div><label>DNI</label><span id="det-dni">-</span></div>
+              <div><label>Sector</label><span id="det-sector">-</span></div>
+            </div>
+            <button class="btn-primary mt" onclick="abrirRegistrarPago(currentClienteId)">💳 Registrar Pago</button>
+            <button class="btn-warning mt" onclick="editarCliente(currentClienteId)">✏ Editar</button>
+            <button class="btn-danger mt" onclick="eliminarCliente(currentClienteId)">🗑 Eliminar</button>
+          </div>
+          <div class="card">
+            <div class="card-header">Historial de Pagos <span class="badge blue" id="det-pila-size">Pila: 0</span></div>
+            <table class="data-table">
+              <thead><tr><th>Fecha</th><th>Mes</th><th>Monto</th><th>Estado</th><th>Método</th></tr></thead>
+              <tbody id="det-pagos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!--Pagos -->
+      <div id="page-pagos" class="page">
+        <div class="page-actions">
+          <div class="search-bar">
+            <input type="text" id="searchPago" placeholder="Buscar pago..." oninput="renderPagos()">
+          </div>
+          <div class="filter-bar">
+            <select id="filtroPagoEstado" onchange="renderPagos()">
+              <option value="">Todos</option>
+              <option value="Pagado">Pagado</option>
+              <option value="Pendiente">Pendiente</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="abrirRegistrarPago(null)">+ Registrar Pago</button>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Cliente</th><th>Plan</th><th>Mes</th><th>Monto</th><th>Fecha</th><th>Estado</th><th>Método</th></tr></thead>
+            <tbody id="tbodyPagos"></tbody>
+          </table>
+          <div class="table-footer">
+            <span id="totalPagos">Total: 0 pagos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Planes-->
+      <div id="page-planes" class="page">
+        <div class="page-actions">
+          <button class="btn-primary" onclick="abrirModalPlan()">+ Nuevo Plan</button>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Nombre</th><th>Velocidad</th><th>Precio</th><th>Clientes</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="tbodyPlanes"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!--Antenas-->
+      <div id="page-antenas" class="page">
+        <div class="page-actions">
+          <button class="btn-primary" onclick="abrirModalAntena()">+ Nueva Antena</button>
+        </div>
+        <div class="antenas-grid" id="antenasGrid"></div>
+      </div>
+
+      <!--Reportes-->
+      <div id="page-reportes" class="page">
+        <div class="stats-grid">
+          <div class="stat-card blue"><div class="stat-icon"><ion-icon name="card-outline"></ion-icon></div><div class="stat-info"><div class="stat-num" id="rep-totalMes">S/0</div><div class="stat-label">Ingresos Este Mes</div></div></div>
+          <div class="stat-card green"><div class="stat-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></div><div class="stat-info"><div class="stat-num" id="rep-pagados">0</div><div class="stat-label">Pagos Realizados</div></div></div>
+          <div class="stat-card red"><div class="stat-icon"><ion-icon name="time-outline"></ion-icon></div><div class="stat-info"><div class="stat-num" id="rep-pendientes">0</div><div class="stat-label">Pagos Pendientes</div></div></div>
+          <div class="stat-card purple"><div class="stat-icon"><ion-icon name="trending-up-outline"></ion-icon></div><div class="stat-info"><div class="stat-num" id="rep-efectividad">0%</div><div class="stat-label">Efectividad Cobro</div></div></div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">Árbol BST de Clientes (por ID)</div>
+            <div class="bst-info">
+              <p>Estructura de árbol binario de búsqueda para gestión eficiente de clientes.</p>
+              <div id="bst-stats" class="bst-stats"></div>
+              <button class="btn-secondary" onclick="renderBSTVisual()">Visualizar Árbol</button>
+            </div>
+            <div id="bst-visual" class="bst-visual"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">Distribución por Plan</div>
+            <div id="planChart" class="plan-chart"></div>
+          </div>
+          <div class="card full-width">
+            <div class="card-header">Historial de Cobros (Últimos 6 meses)</div>
+            <div id="histChart" class="hist-chart-wrap"></div>
+          </div>
+        </div>
+      </div>
+
+      <!--Configuracion -->
+      <div id="page-configuracion" class="page">
+        <div class="card config-card">
+          <div class="card-header">Configuración del Sistema</div>
+          <div class="config-grid">
+            <div class="config-item">
+              <label>Nombre del Sistema</label>
+              <input type="text" id="cfg-nombre" value="SocioRed">
+            </div>
+            <div class="config-item">
+              <label>Zona de Cobertura</label>
+              <input type="text" id="cfg-zona" value="Alto Trujillo - La Libertad - Perú">
+            </div>
+            <div class="config-item">
+              <label>Día de Corte</label>
+              <input type="number" id="cfg-corte" value="5" min="1" max="31">
+            </div>
+            <div class="config-item">
+              <label>Moneda</label>
+              <select id="cfg-moneda"><option>S/ (Soles)</option><option>$ (Dólares)</option></select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="guardarConfig()">💾 Guardar Cambios</button>
+        </div>
+        <div class="card config-card mt">
+          <div class="card-header">Estructuras de Datos en Uso</div>
+          <div class="ds-grid">
+            <div class="ds-item">
+              <div class="ds-icon">🌳</div>
+              <div class="ds-title">Árbol BST</div>
+              <div class="ds-desc">Búsqueda O(log n) de clientes por ID. Inserción y eliminación eficiente.</div>
+              <div class="ds-stat" id="bst-node-count">Nodos: 0</div>
+            </div>
+            <div class="ds-item">
+              <div class="ds-icon">🔁</div>
+              <div class="ds-title">Cola (Queue)</div>
+              <div class="ds-desc">FIFO: Gestión de pagos pendientes. El primer deudor es el primero en ser notificado.</div>
+              <div class="ds-stat" id="queue-size">Elementos: 0</div>
+            </div>
+            <div class="ds-item">
+              <div class="ds-icon">📚</div>
+              <div class="ds-title">Pila (Stack)</div>
+              <div class="ds-desc">LIFO: Historial de pagos por cliente. Último pago registrado al tope.</div>
+              <div class="ds-stat" id="stack-ops">Operaciones: 0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div><!-- /app -->
+
+<!--Mis modales-->
+
+<!-- Modal Cliente -->
+<div id="modalCliente" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="modalClienteTitulo">Nuevo Cliente</span>
+      <button onclick="cerrarModal('modalCliente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mc-id">
+      <div class="form-row">
+        <div class="form-group"><label>Nombre Completo*</label><input type="text" id="mc-nombre" placeholder="Juan Pérez"></div>
+        <div class="form-group"><label>DNI*</label><input type="text" id="mc-dni" placeholder="12345678" maxlength="8"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Teléfono</label><input type="text" id="mc-tel" placeholder="987654321"></div>
+        <div class="form-group"><label>Dirección</label><input type="text" id="mc-dir" placeholder="Mz A Lt 5 - Sector 3"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Sector</label>
+          <select id="mc-sector">
+            <option>Sector 1</option><option>Sector 2</option><option>Sector 3</option><option>Sector 4</option><option>Sector 5</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Plan*</label>
+          <select id="mc-plan"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Antena</label>
+          <select id="mc-antena"></select>
+        </div>
+        <div class="form-group"><label>Fecha Instalación</label>
+          <input type="date" id="mc-fecha">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal('modalCliente')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarCliente()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pago -->
+<div id="modalPago" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <span>Registrar Pago</span>
+      <button onclick="cerrarModal('modalPago')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Cliente*</label>
+        <select id="mp-cliente" onchange="onClientePagoChange()"></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Plan</label><input type="text" id="mp-plan" readonly></div>
+        <div class="form-group"><label>Monto (S/)</label><input type="number" id="mp-monto" step="0.01"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Mes de Pago</label>
+          <select id="mp-mes">
+            <option>Enero 2026</option><option>Febrero 2026</option><option>Marzo 2026</option>
+            <option>Abril 2026</option><option selected>Mayo 2026</option><option>Junio 2026</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Fecha de Pago</label><input type="date" id="mp-fecha"></div>
+      </div>
+      <div class="form-group">
+        <label>Método de Pago</label>
+        <select id="mp-metodo">
+          <option>Efectivo</option><option>Yape</option><option>Plin</option><option>Transferencia</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Observación</label><input type="text" id="mp-obs" placeholder="Opcional..."></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal('modalPago')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarPago()">✓ Registrar Pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Plan -->
+<div id="modalPlan" class="modal-overlay hidden">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <span id="modalPlanTitulo">Nuevo Plan</span>
+      <button onclick="cerrarModal('modalPlan')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mpl-id">
+      <div class="form-group"><label>Nombre del Plan</label><input type="text" id="mpl-nombre" placeholder="Básico"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Velocidad (Mbps)</label><input type="number" id="mpl-vel" placeholder="30"></div>
+        <div class="form-group"><label>Precio (S/)</label><input type="number" id="mpl-precio" placeholder="50" step="0.01"></div>
+      </div>
+      <div class="form-group"><label>Estado</label>
+        <select id="mpl-estado"><option>Activo</option><option>Inactivo</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal('modalPlan')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarPlan()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Antena -->
+<div id="modalAntena" class="modal-overlay hidden">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <span id="modalAntenaTitulo">Nueva Antena</span>
+      <button onclick="cerrarModal('modalAntena')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ma-id">
+      <div class="form-group"><label>Nombre / ID</label><input type="text" id="ma-nombre" placeholder="A4 - Cerro Este"></div>
+      <div class="form-group"><label>Ubicación</label><input type="text" id="ma-ubicacion" placeholder="Sector 2 - Cerro Este"></div>
+      <div class="form-group"><label>Sector</label>
+        <select id="ma-sector">
+          <option>Sector 1</option><option>Sector 2</option><option>Sector 3</option><option>Sector 4</option><option>Sector 5</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal('modalAntena')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarAntena()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mis Scrips.JS-->
+<div id="toast" class="toast hidden"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/structures.js"></script>
+<script src="assets/js/app.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</body>
+</html>
