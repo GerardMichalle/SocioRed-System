@@ -1,19 +1,19 @@
-// 
+
 // STRUCTURES.JS — Estructuras de Datos SocioRed
 // Árbol BST, Cola (Queue) y Pila (Stack)
-// 
 
-// 
+
+
 // ÁRBOL BINARIO DE BÚSQUEDA (BST)
 // Usado para: búsqueda eficiente de clientes por ID numérico
 // Complejidad: O(log n) búsqueda/inserción (árbol balanceado)
-// 
+
 class BSTNode {
   constructor(key, data) {
     this.key  = parseInt(key);  // ID numérico
     this.data = data;           // Objeto cliente
-    this.left = null;
-    this.right = null;
+    this.izquierda = null;
+    this.derecha = null;
   }
 }
 
@@ -29,11 +29,11 @@ class BST {
     let curr = this.root;
     while (true) {
       if (node.key < curr.key) {
-        if (!curr.left) { curr.left = node; this.size++; return; }
-        curr = curr.left;
+        if (!curr.izquierda) { curr.izquierda = node; this.size++; return; }
+        curr = curr.izquierda;
       } else if (node.key > curr.key) {
-        if (!curr.right) { curr.right = node; this.size++; return; }
-        curr = curr.right;
+        if (!curr.derecha) { curr.derecha = node; this.size++; return; }
+        curr = curr.derecha;
       } else {
         curr.data = data; // update
         return;
@@ -46,7 +46,7 @@ class BST {
     const k = parseInt(key);
     while (curr) {
       if (k === curr.key) return curr.data;
-      curr = k < curr.key ? curr.left : curr.right;
+      curr = k < curr.key ? curr.izquierda : curr.derecha;
     }
     return null;
   }
@@ -56,17 +56,17 @@ class BST {
   }
   _deleteNode(node, key) {
     if (!node) return null;
-    if (key < node.key) { node.left = this._deleteNode(node.left, key); }
-    else if (key > node.key) { node.right = this._deleteNode(node.right, key); }
+    if (key < node.key) { node.izquierda = this._deleteNode(node.izquierda, key); }
+    else if (key > node.key) { node.derecha = this._deleteNode(node.derecha, key); }
     else {
       this.size--;
-      if (!node.left) return node.right;
-      if (!node.right) return node.left;
-      let min = node.right;
-      while (min.left) min = min.left;
+      if (!node.izquierda) return node.derecha;
+      if (!node.derecha) return node.izquierda;
+      let min = node.derecha;
+      while (min.izquierda) min = min.izquierda;
       node.key  = min.key;
       node.data = min.data;
-      node.right = this._deleteNode(node.right, min.key);
+      node.derecha = this._deleteNode(node.derecha, min.key);
       this.size++;
     }
     return node;
@@ -76,9 +76,9 @@ class BST {
     const result = [];
     const traverse = (node) => {
       if (!node) return;
-      traverse(node.left);
+      traverse(node.izquierda);
       result.push(node.data);
-      traverse(node.right);
+      traverse(node.derecha);
     };
     traverse(this.root);
     return result;
@@ -87,7 +87,7 @@ class BST {
   height() {
     const h = (node) => {
       if (!node) return 0;
-      return 1 + Math.max(h(node.left), h(node.right));
+      return 1 + Math.max(h(node.izquierda), h(node.derecha));
     };
     return h(this.root);
   }
@@ -96,24 +96,24 @@ class BST {
   toAscii() {
     if (!this.root) return '(árbol vacío)';
     const lines = [];
-    const fill = (node, prefix, isLeft) => {
+    const fill = (node, prefix, isizquierda) => {
       if (!node) return;
-      if (node.right) fill(node.right, prefix + (isLeft ? '│   ' : '    '), false);
-      lines.push(prefix + (isLeft ? '└── ' : '┌── ') + String(node.key).padStart(3,'0') + ' ' + (node.data.nombre||''));
-      if (node.left)  fill(node.left,  prefix + (isLeft ? '    ' : '│   '), true);
+      if (node.derecha) fill(node.derecha, prefix + (isizquierda ? '│   ' : '    '), false);
+      lines.push(prefix + (isizquierda ? '└── ' : '┌── ') + String(node.key).padStart(3,'0') + ' ' + (node.data.nombre||''));
+      if (node.izquierda)  fill(node.izquierda,  prefix + (isizquierda ? '    ' : '│   '), true);
     };
-    if (this.root.right) fill(this.root.right, '', false);
+    if (this.root.derecha) fill(this.root.derecha, '', false);
     lines.push('● ' + String(this.root.key).padStart(3,'0') + ' ' + (this.root.data.nombre||''));
-    if (this.root.left)  fill(this.root.left,  '', true);
+    if (this.root.izquierda)  fill(this.root.izquierda,  '', true);
     return lines.join('\n');
   }
 }
 
-// 
+
 // COLA (QUEUE) — FIFO
 // Usado para: gestión de pagos pendientes
 // El primero en entrar es el primero en ser cobrado
-// 
+
 class Queue {
   constructor() {
     this.items = [];
@@ -131,10 +131,10 @@ class Queue {
   }
 }
 
-// 
+ 
 // PILA (STACK) — LIFO
 // Usado para: historial de pagos por cliente (último al tope)
-// 
+
 class Stack {
   constructor() {
     this.items = [];
@@ -149,16 +149,16 @@ class Stack {
   clear()      { this.items = []; }
 }
 
-// ==========================================
+
 // INSTANCIAS GLOBALES
-// ==========================================
+
 const clientesBST = new BST();
 const pagosQueue  = new Queue();   // pagos pendientes
 const pagosStack  = {};            // { clienteId: Stack } — historial por cliente
 
-// ==========================================
+
 // CARGA DE ESTRUCTURAS DESDE STORAGE
-// ==========================================
+
 function loadStructures() {
   const clientes = getClientes();
   const pagos    = getPagos();
