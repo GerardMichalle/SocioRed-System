@@ -177,6 +177,15 @@ function showPage(name) {
   document.getElementById("sidebar").classList.remove("open");
 }
 
+function irClientesDashboard(estado) {
+  showPage("clientes");
+  document.getElementById("searchCliente").value = "";
+  document.getElementById("filtroEstado").value = estado;
+  document.getElementById("filtroSector").value = "";
+  clientesPaginaActual = 1;
+  renderClientes();
+}
+
 function updateDashboard() {
   const clientes = getClientes();
   const pagos = getPagos();
@@ -246,7 +255,7 @@ function updateDashboard() {
 function renderColaQueue() {
   const colaList = document.getElementById("colaList");
   const badge = document.getElementById("cola-badge");
-  const queue = pagosQueue.toList();
+  const queue = pagosPriorityQueue.toList();
   badge.textContent = queue.length;
   if (!queue.length) {
     colaList.innerHTML = '<div class="empty-msg">✅ Sin pagos pendientes</div>';
@@ -255,9 +264,12 @@ function renderColaQueue() {
   colaList.innerHTML = queue
     .map(
       (item, i) => `
-    <div class="queue-item">
+    <div class="queue-item priority-${item.prioridadNivel}">
       <div>
-        <div class="q-name">${i === 0 ? "🔔 " : ""} ${item.nombre}</div>
+        <div class="q-name">
+          ${i === 0 ? "🔔 " : ""} ${item.nombre}
+          <span class="priority-badge ${item.prioridadNivel}">${item.prioridadTexto}</span>
+        </div>
         <div class="q-info">ID: ${item.clienteId} · ${item.mes} · S/ ${item.monto?.toFixed(2) || "--"}</div>
       </div>
       <button class="q-action" onclick="abrirRegistrarPago('${item.clienteId}')">💳 Cobrar</button>
@@ -938,6 +950,8 @@ function renderConfiguracion() {
     `Nodos: ${clientesBST.size}`;
   document.getElementById("queue-size").textContent =
     `Elementos: ${pagosQueue.size}`;
+  document.getElementById("priority-size").textContent =
+    `Elementos: ${pagosPriorityQueue.size}`;
   // Contar ops totales de stacks
   let total = 0;
   Object.values(pagosStack).forEach((s) => {

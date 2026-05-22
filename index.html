@@ -96,28 +96,28 @@
 
       <div id="page-dashboard" class="page active">
         <div class="stats-grid">
-          <div class="stat-card blue">
+          <div class="stat-card blue stat-link" onclick="irClientesDashboard('')" role="button" tabindex="0">
             <div class="stat-icon"><ion-icon name="people-circle-outline"></ion-icon></div>
             <div class="stat-info">
               <div class="stat-num" id="stat-activos">0</div>
               <div class="stat-label">Clientes Activos</div>
             </div>
           </div>
-          <div class="stat-card red">
+          <div class="stat-card red stat-link" onclick="irClientesDashboard('Con deuda')" role="button" tabindex="0">
             <div class="stat-icon"><ion-icon name="warning-outline"></ion-icon></div>
             <div class="stat-info">
               <div class="stat-num" id="stat-deuda">0</div>
               <div class="stat-label">Clientes con Deuda</div>
             </div>
           </div>
-          <div class="stat-card green">
+          <div class="stat-card green stat-link" onclick="showPage('reportes')" role="button" tabindex="0">
             <div class="stat-icon"><ion-icon name="card-outline"></ion-icon></div>
             <div class="stat-info">
               <div class="stat-num" id="stat-ingresos">S/ 0</div>
               <div class="stat-label">Ingresos del Mes</div>
             </div>
           </div>
-          <div class="stat-card purple">
+          <div class="stat-card purple stat-link" onclick="showPage('antenas')" role="button" tabindex="0">
             <div class="stat-icon">📡</div>
             <div class="stat-info">
               <div class="stat-num" id="stat-antenas">0</div>
@@ -164,7 +164,7 @@
       <div id="page-clientes" class="page">
         <div class="page-actions">
           <div class="search-bar">
-            <input type="text" id="searchCliente" placeholder="Buscar por nombre, DNI o teléfono..." oninput="buscarCliente()">
+            <input type="text" id="searchCliente" placeholder="Buscar por nombre o ID" oninput="buscarCliente()">
             <button onclick="buscarCliente()">🔍 Buscar</button>
           </div>
           <div class="filter-bar">
@@ -355,6 +355,12 @@
               <div class="ds-title">Pila (Stack)</div>
               <div class="ds-desc">LIFO: Historial de pagos por cliente. Último pago registrado en la parte superior.</div>
               <div class="ds-stat" id="stack-ops">Operaciones: 0</div>
+            </div>
+            <div class="ds-item">
+              <div class="ds-icon">!</div>
+              <div class="ds-title">Cola de Prioridad</div>
+              <div class="ds-desc">Heap: Ordena cobros pendientes por urgencia alta, media y baja.</div>
+              <div class="ds-stat" id="priority-size">Elementos: 0</div>
             </div>
           </div>
         </div>

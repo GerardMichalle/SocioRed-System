@@ -147,6 +147,141 @@ class Queue {
 
 
 
+// Se usa para ordenar los pagos pendientes por urgencia
+class PriorityQueue {
+  constructor() {
+    this.heap = [];
+  }
+
+  get size() {
+    return this.heap.length;
+  }
+
+  insert(valor) {
+    this.heap.push(valor);
+    this._subir(this.heap.length - 1);
+  }
+
+  extractMax() {
+    if (!this.heap.length) return null;
+    if (this.heap.length === 1) return this.heap.pop();
+
+    var max = this.heap[0];
+    this.heap[0] = this.heap.pop();
+    this._bajar(0);
+    return max;
+  }
+
+  toList() {
+    var copia = new PriorityQueue();
+    copia.heap = this.heap.slice();
+    var lista = [];
+    while (copia.size) lista.push(copia.extractMax());
+    return lista;
+  }
+
+  limpiar() {
+    this.heap = [];
+  }
+
+  _mayor(a, b) {
+    if (a.prioridad !== b.prioridad) return a.prioridad > b.prioridad;
+    if (a.monto !== b.monto) return a.monto > b.monto;
+    return String(a.clienteId).localeCompare(String(b.clienteId)) < 0;
+  }
+
+  _subir(index) {
+    while (index > 0) {
+      var padre = Math.floor((index - 1) / 2);
+      if (!this._mayor(this.heap[index], this.heap[padre])) break;
+      var temp = this.heap[index];
+      this.heap[index] = this.heap[padre];
+      this.heap[padre] = temp;
+      index = padre;
+    }
+  }
+
+  _bajar(index) {
+    while (true) {
+      var izq = index * 2 + 1;
+      var der = index * 2 + 2;
+      var mayor = index;
+
+      if (izq < this.heap.length && this._mayor(this.heap[izq], this.heap[mayor])) mayor = izq;
+      if (der < this.heap.length && this._mayor(this.heap[der], this.heap[mayor])) mayor = der;
+      if (mayor === index) break;
+
+      var temp = this.heap[index];
+      this.heap[index] = this.heap[mayor];
+      this.heap[mayor] = temp;
+      index = mayor;
+    }
+  }
+}
+
+function obtenerOrdenMes(mesTexto) {
+  var partes = String(mesTexto || "").split(" ");
+  var meses = {
+    Enero: 1,
+    Febrero: 2,
+    Marzo: 3,
+    Abril: 4,
+    Mayo: 5,
+    Junio: 6,
+    Julio: 7,
+    Agosto: 8,
+    Septiembre: 9,
+    Octubre: 10,
+    Noviembre: 11,
+    Diciembre: 12,
+  };
+  var mes = meses[partes[0]] || 12;
+  var anio = parseInt(partes[1]) || 9999;
+  return anio * 12 + mes;
+}
+
+function obtenerMesActual() {
+  var meses = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+  var fecha = new Date();
+  return meses[fecha.getMonth()] + " " + fecha.getFullYear();
+}
+
+function calcularPrioridadPago(pago) {
+  var ordenMes = obtenerOrdenMes(pago.mes);
+  var mesActual = obtenerOrdenMes(obtenerMesActual());
+  var mesesAtraso = mesActual - ordenMes;
+  var monto = pago.monto || 0;
+  var nivel = "baja";
+  var texto = "Prioridad baja";
+
+  if (mesesAtraso >= 2 || monto >= 90) {
+    nivel = "alta";
+    texto = "Prioridad alta";
+  } else if (mesesAtraso >= 1 || monto >= 70) {
+    nivel = "media";
+    texto = "Prioridad media";
+  }
+
+  return {
+    nivel: nivel,
+    texto: texto,
+    score: mesesAtraso * 1000 + monto,
+  };
+}
+
 //ARBOL BINARIO :))))
 
 // Se usa para, buscar clientes por ID rapido
@@ -281,6 +416,7 @@ class BST {
 
 const clientesBST = new BST();
 const pagosQueue = new Queue();
+const pagosPriorityQueue = new PriorityQueue();
 const pagosStack = {};
 
 function loadStructures() {
@@ -304,7 +440,7 @@ function loadStructures() {
       if (!tienePendiente) {
         var plan = getPlan(c.planId);
         pagos.push({
-          id: siguienteId(pagos, "PAG"),
+          id: nextId(pagos, "PAG"),
           clienteId: c.id,
           mes: obtenerMesActual(),
           monto: plan ? plan.precio : 0,
@@ -320,6 +456,7 @@ function loadStructures() {
   if (hubocambio) setPagos(pagos);
 
   pagosQueue.limpiar();
+  pagosPriorityQueue.limpiar();
   pagos.forEach(function (p) {
     if (p.estado === "Pendiente" && !pagosQueue.contiene(p.clienteId)) {
       var c = getCliente(p.clienteId);
@@ -328,6 +465,20 @@ function loadStructures() {
         nombre: c ? c.nombre : "?",
         mes: p.mes,
         monto: p.monto,
+      });
+    }
+    if (p.estado === "Pendiente") {
+      var cliente = getCliente(p.clienteId);
+      var prioridad = calcularPrioridadPago(p);
+      pagosPriorityQueue.insert({
+        pagoId: p.id,
+        clienteId: p.clienteId,
+        nombre: cliente ? cliente.nombre : "?",
+        mes: p.mes,
+        monto: p.monto || 0,
+        prioridad: prioridad.score,
+        prioridadNivel: prioridad.nivel,
+        prioridadTexto: prioridad.texto,
       });
     }
   });

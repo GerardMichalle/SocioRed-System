@@ -167,6 +167,8 @@ a{cursor:pointer;text-decoration:none}
 .stat-card.purple{background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(139,92,246,.05));border-color:rgba(139,92,246,.25)}
 .stat-card.purple::before{background:var(--accent-purple)}
 .stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.stat-link{cursor:pointer}
+.stat-link:focus-visible{outline:2px solid var(--accent-blue2);outline-offset:3px}
 .stat-icon{font-size:2rem}
 .stat-num{font-family:var(--font-display);font-size:1.9rem;font-weight:700;line-height:1}
 .stat-card.blue .stat-num{color:var(--accent-blue)}
@@ -215,8 +217,18 @@ a{cursor:pointer;text-decoration:none}
   border-left:3px solid var(--accent-red);
   font-size:.85rem;
 }
+.queue-item.priority-alta{border-left-color:var(--accent-red);background:rgba(239,68,68,.08)}
+.queue-item.priority-media{border-left-color:var(--accent-yellow);background:rgba(245,158,11,.08)}
+.queue-item.priority-baja{border-left-color:#facc15;background:rgba(250,204,21,.07)}
 .queue-item .q-name{font-weight:700;color:var(--text)}
 .queue-item .q-info{color:var(--text3);font-family:var(--font-mono);font-size:.78rem}
+.priority-badge{
+  display:inline-flex;align-items:center;margin-left:8px;padding:2px 8px;
+  border-radius:999px;font-size:.68rem;font-weight:800;letter-spacing:.2px;
+}
+.priority-badge.alta{color:var(--accent-red);background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.32)}
+.priority-badge.media{color:var(--accent-yellow);background:rgba(245,158,11,.14);border:1px solid rgba(245,158,11,.32)}
+.priority-badge.baja{color:#facc15;background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.28)}
 .queue-item .q-action{
   padding:5px 12px;background:var(--accent-green);
   color:#fff;border:none;border-radius:6px;
