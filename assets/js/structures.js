@@ -6,7 +6,7 @@ class Nodo {
 }
 
 
-// Se usa para: historial de pagos del cliente
+// Se usa para nuestro historial de pagos del cliente
 class Stack {
   constructor() {
     this.tope  = null   
@@ -55,7 +55,7 @@ class Stack {
 
 
 
-// Se usa para: clientes que deben pagar
+// Se usa para ver los clientes que deben pagar
 class Queue {
   constructor() {
     this.frente = null   
@@ -157,7 +157,7 @@ class Queue {
 
 //ARBOL BINARIO :))))
 
-// Se usa para: buscar clientes por ID rapido
+// Se usa para, buscar clientes por ID rapido
 
 class NodoBST {
   constructor(id, cliente) {

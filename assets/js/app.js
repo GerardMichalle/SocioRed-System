@@ -605,63 +605,55 @@ function onClientePagoChange() {
 }
 
 function guardarPago() {
-  const cId = document.getElementById("mp-cliente").value;
-  const monto = parseFloat(document.getElementById("mp-monto").value);
-  const mes = document.getElementById("mp-mes").value;
-  const fecha = document.getElementById("mp-fecha").value;
-  if (!cId || !monto || monto <= 0) {
-    showToast("Completa los campos requeridos", "error");
-    return;
-  }
-
-  const pagos = getPagos();
+  const cId   = document.getElementById('mp-cliente').value;
+  const monto = parseFloat(document.getElementById('mp-monto').value);
+  const mes   = document.getElementById('mp-mes').value;
+  const fecha = document.getElementById('mp-fecha').value;
+  if (!cId || !monto || monto<=0) { showToast('Completa los campos requeridos','error'); return; }
+ 
+  const pagos    = getPagos();
   const clientes = getClientes();
-
+ 
   const nuevoPago = {
-    id: nextId(pagos, "PAG"),
+    id:        nextId(pagos,'PAG'),
     clienteId: cId,
     mes,
     monto,
     fecha,
-    estado: "Pagado",
-    metodo: document.getElementById("mp-metodo").value,
-    obs: document.getElementById("mp-obs").value,
+    estado:  'Pagado',
+    metodo:  document.getElementById('mp-metodo').value,
+    obs:     document.getElementById('mp-obs').value,
   };
   pagos.push(nuevoPago);
-
-  // Marcar pagos pendientes de ese cliente+mes como Pagado
-  pagos.forEach((p) => {
-    if (p.clienteId === cId && p.mes === mes && p.estado === "Pendiente") {
-      p.estado = "Pagado";
-      p.fecha = fecha;
-      p.metodo = nuevoPago.metodo;
-    }
-  });
-
   setPagos(pagos);
-
+ 
   // Actualizar estado del cliente
-  const idx = clientes.findIndex((c) => c.id === cId);
-  if (idx >= 0) {
-    const aun = pagos.filter(
-      (p) => p.clienteId === cId && p.estado === "Pendiente",
-    );
-    clientes[idx].estado = aun.length ? "Con deuda" : "Al dia";
+  const idx = clientes.findIndex(c=>c.id===cId);
+  if (idx>=0) {
+    // Verificar si tiene pagos pendientes restantes
+    const aun = pagos.filter(p=>p.clienteId===cId && p.estado==='Pendiente');
+    if (!aun.length) clientes[idx].estado = 'Al día';
     setClientes(clientes);
     clientesBST.insert(cId, clientes[idx]);
   }
-
-  // Recargar estructuras desde cero (reconstruye la cola limpia)
+    pagos.forEach(p => {
+    if (p.clienteId === cId && p.mes === mes && p.estado === 'Pendiente') {
+      p.estado = 'Pagado';
+      p.fecha  = fecha;
+      p.metodo = nuevoPago.metodo;
+    }
+  });
+  // Estructuras
+  stackOpsCount++;
+  registrarPagoEnEstructura(nuevoPago);
+ 
+  showToast('Pago registrado ✓','success');
+  cerrarModal('modalPago');
   loadStructures();
-
-  showToast("Pago registrado ✓", "Con exito!!");
-  cerrarModal("modalPago");
-
-  // Refrescar todo
   updateDashboard();
-  if (currentPage === "pagos") renderPagos();
-  if (currentPage === "detalle") verCliente(cId);
-  if (currentPage === "clientes") renderClientes();
+  if (currentPage==='pagos')   renderPagos();
+  if (currentPage==='detalle') verCliente(cId);
+  if (currentPage==='clientes') renderClientes();
 }
 
 function renderPlanes() {
