@@ -23,45 +23,44 @@ document.addEventListener("visibilitychange", () => {
 });
 
 function animarInput(selector, textos) {
-    const input = document.querySelector(selector);
+  const input = document.querySelector(selector);
 
-    let i = 0;
-    let j = 0;
-    let escribiendo = true;
+  let i = 0;
+  let j = 0;
+  let escribiendo = true;
 
-    function efecto() {
-      const texto = textos[i];
+  function efecto() {
+    const texto = textos[i];
 
-      if (escribiendo) {
-        input.setAttribute("placeholder", texto.substring(0, j + 1));
-        j++;
+    if (escribiendo) {
+      input.setAttribute("placeholder", texto.substring(0, j + 1));
+      j++;
 
-        if (j === texto.length) {
-          escribiendo = false;
-          setTimeout(efecto, 1500);
-          return;
-        }
-
-      } else {
-        input.setAttribute("placeholder", texto.substring(0, j - 1));
-        j--;
-
-        if (j === 0) {
-          escribiendo = true;
-          i = (i + 1) % textos.length;
-        }
+      if (j === texto.length) {
+        escribiendo = false;
+        setTimeout(efecto, 1500);
+        return;
       }
+    } else {
+      input.setAttribute("placeholder", texto.substring(0, j - 1));
+      j--;
 
-      setTimeout(efecto, escribiendo ? 80 : 40);
+      if (j === 0) {
+        escribiendo = true;
+        i = (i + 1) % textos.length;
+      }
     }
 
-    // detener cuando el usuario escribe
-    input.addEventListener("focus", () => {
-      input.setAttribute("placeholder", "");
-    });
-
-    efecto();
+    setTimeout(efecto, escribiendo ? 80 : 40);
   }
+
+  // detener cuando el usuario escribe
+  input.addEventListener("focus", () => {
+    input.setAttribute("placeholder", "");
+  });
+
+  efecto();
+}
 
 animarInput(".adminInput", ["Ingresa tu usuario", "admin"]);
 
@@ -476,7 +475,6 @@ function guardarCliente() {
 
   const clientes = getClientes();
   if (id) {
-    // Editar
     const idx = clientes.findIndex((c) => c.id === id);
     if (idx < 0) return;
     clientes[idx].nombre = nombre;
@@ -491,7 +489,6 @@ function guardarCliente() {
     setClientes(clientes);
     showToast("Cliente actualizado ✓", "Con exito!!");
   } else {
-    // Nuevo
     const newId = nextId(clientes, "");
     const nuevo = {
       id: newId,
@@ -503,12 +500,14 @@ function guardarCliente() {
       planId: document.getElementById("mc-plan").value,
       antenaId: document.getElementById("mc-antena").value,
       fechaInstalacion: document.getElementById("mc-fecha").value,
-      estado: "Al día",
+      estado: "Con deuda",
     };
     clientes.push(nuevo);
     setClientes(clientes);
     insertarClienteBST(nuevo);
     pagosStack[nuevo.id] = new Stack();
+    
+    
     showToast("Cliente creado ✓", "Con exito!!");
   }
   cerrarModal("modalCliente");
@@ -647,7 +646,7 @@ function guardarPago() {
     const aun = pagos.filter(
       (p) => p.clienteId === cId && p.estado === "Pendiente",
     );
-    clientes[idx].estado = aun.length ? "Con deuda" : "Al día";
+    clientes[idx].estado = aun.length ? "Con deuda" : "Al dia";
     setClientes(clientes);
     clientesBST.insert(cId, clientes[idx]);
   }
@@ -844,28 +843,25 @@ function eliminarAntena(id) {
 }
 
 function renderReportes() {
+
   const pagos = getPagos();
   const clientes = getClientes();
 
+  
+  const conDeuda = clientes.filter((c) => c.estado === "Con deuda").length;
+  const alDia = clientes.filter((c) => c.estado === "Al día").length;
   const mesPagados = pagos.filter(
-    (p) => p.mes === "Mayo 2026" && p.estado === "Pagado",
-  );
-  const mesPendientes = pagos.filter(
-    (p) => p.mes === "Mayo 2026" && p.estado === "Pendiente",
+    (p) => p.estado === "Pagado" && p.mes === "Mayo 2026",
   );
   const totalMes = mesPagados.reduce((s, p) => s + p.monto, 0);
   const efectividad = clientes.length
-    ? Math.round(
-        (clientes.filter((c) => c.estado === "Al día").length /
-          clientes.length) *
-          100,
-      )
+    ? Math.round((alDia / clientes.length) * 100)
     : 0;
 
   document.getElementById("rep-totalMes").textContent =
     `S/ ${totalMes.toLocaleString("es-PE", { minimumFractionDigits: 2 })}`;
   document.getElementById("rep-pagados").textContent = mesPagados.length;
-  document.getElementById("rep-pendientes").textContent = mesPendientes.length;
+  document.getElementById("rep-pendientes").textContent = conDeuda; // 
   document.getElementById("rep-efectividad").textContent = efectividad + "%";
 
   // BST stats

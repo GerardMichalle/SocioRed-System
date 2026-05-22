@@ -1,4 +1,4 @@
-//BASE DE DATOS SIMPLE
+//Mi base de datos simple
 
 const DB_KEYS = {
   clientes: 'sr_clientes',
@@ -7,7 +7,6 @@ const DB_KEYS = {
   antenas: 'sr_antenas',
 };
 
-// ---- DATOS SEMILLA ----
 const SEED_PLANES = [
   { id:'P01', nombre:'Básico',    velocidad:30,  precio:50.00, estado:'Activo' },
   { id:'P02', nombre:'Estándar',  velocidad:50,  precio:70.00, estado:'Activo' },
@@ -70,7 +69,6 @@ const SEED_PAGOS = [
   { id:'PAG019', clienteId:'012', mes:'Mayo 2026',    monto:90.00, fecha:'',           estado:'Pendiente', metodo:'',    obs:'' },
 ];
 
-// ---- INIT DB ----
 function initDB() {
   if (!localStorage.getItem(DB_KEYS.planes))   localStorage.setItem(DB_KEYS.planes,   JSON.stringify(SEED_PLANES));
   if (!localStorage.getItem(DB_KEYS.antenas))  localStorage.setItem(DB_KEYS.antenas,  JSON.stringify(SEED_ANTENAS));
@@ -78,7 +76,7 @@ function initDB() {
   if (!localStorage.getItem(DB_KEYS.pagos))    localStorage.setItem(DB_KEYS.pagos,    JSON.stringify(SEED_PAGOS));
 }
 
-// ---- CRUD helpers ----
+
 function getPlanes()   { return JSON.parse(localStorage.getItem(DB_KEYS.planes)   || '[]'); }
 function getAntenas()  { return JSON.parse(localStorage.getItem(DB_KEYS.antenas)  || '[]'); }
 function getClientes() { return JSON.parse(localStorage.getItem(DB_KEYS.clientes) || '[]'); }

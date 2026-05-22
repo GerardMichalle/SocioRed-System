@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<!-- LOGIN -->
+
 <div id="loginPage" class="login-page">
   <div class="login-bg">
     <div class="login-grid"></div>
@@ -37,10 +37,10 @@
   </div>
 </div>
 
-<!-- APP -->
+
 <div id="appPage" class="app hidden">
 
-  <!-- SIDEBAR -->
+
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <span class="logo-socio">SOCIO</span><span class="logo-red">RED</span>
@@ -75,10 +75,10 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
+
   <main class="main-content">
 
-    <!-- TOPBAR -->
+
     <div class="topbar">
       <div class="topbar-left">
         <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
@@ -90,10 +90,10 @@
       </div>
     </div>
 
-    <!-- PAGES -->
+
     <div class="pages">
 
-      <!-- ===== DASHBOARD ===== -->
+
       <div id="page-dashboard" class="page active">
         <div class="stats-grid">
           <div class="stat-card blue">
@@ -160,7 +160,7 @@
         </div>
       </div>
 
-      <!-- ===== CLIENTES ===== -->
+  
       <div id="page-clientes" class="page">
         <div class="page-actions">
           <div class="search-bar">
@@ -193,7 +193,7 @@
         </div>
       </div>
 
-      <!-- ===== DETALLE CLIENTE ===== -->
+  
       <div id="page-detalle" class="page">
         <div class="page-actions">
           <button class="btn-back" onclick="showPage('clientes')">← Volver</button>
@@ -233,7 +233,7 @@
         </div>
       </div>
 
-      <!--Pagos -->
+
       <div id="page-pagos" class="page">
         <div class="page-actions">
           <div class="search-bar">
@@ -259,7 +259,7 @@
         </div>
       </div>
 
-      <!-- Planes-->
+  
       <div id="page-planes" class="page">
         <div class="page-actions">
           <button class="btn-primary" onclick="abrirModalPlan()">+ Nuevo Plan</button>
@@ -272,7 +272,7 @@
         </div>
       </div>
 
-      <!--Antenas-->
+  
       <div id="page-antenas" class="page">
         <div class="page-actions">
           <button class="btn-primary" onclick="abrirModalAntena()">+ Nueva Antena</button>
@@ -280,7 +280,7 @@
         <div class="antenas-grid" id="antenasGrid"></div>
       </div>
 
-      <!--Reportes-->
+
       <div id="page-reportes" class="page">
         <div class="stats-grid">
           <div class="stat-card blue"><div class="stat-icon"><ion-icon name="card-outline"></ion-icon></div><div class="stat-info"><div class="stat-num" id="rep-totalMes">S/0</div><div class="stat-label">Ingresos Este Mes</div></div></div>
@@ -288,6 +288,7 @@
           <div class="stat-card red"><div class="stat-icon"><ion-icon name="time-outline"></ion-icon></div><div class="stat-info"><div class="stat-num" id="rep-pendientes">0</div><div class="stat-label">Pagos Pendientes</div></div></div>
           <div class="stat-card purple"><div class="stat-icon"><ion-icon name="trending-up-outline"></ion-icon></div><div class="stat-info"><div class="stat-num" id="rep-efectividad">0%</div><div class="stat-label">Efectividad Cobro</div></div></div>
         </div>
+        
         <div class="dashboard-grid">
           <div class="card">
             <div class="card-header">Árbol BST de Clientes (por ID)</div>
@@ -310,7 +311,7 @@
         </div>
       </div>
 
-      <!--Configuracion -->
+  
       <div id="page-configuracion" class="page">
         <div class="card config-card">
           <div class="card-header">Configuración del Sistema</div>
@@ -363,9 +364,9 @@
   </main>
 </div><!-- /app -->
 
-<!--Mis modales-->
 
-<!-- Modal Cliente -->
+
+
 <div id="modalCliente" class="modal-overlay hidden">
   <div class="modal">
     <div class="modal-header">
@@ -408,7 +409,7 @@
   </div>
 </div>
 
-<!-- Modal Pago -->
+
 <div id="modalPago" class="modal-overlay hidden">
   <div class="modal">
     <div class="modal-header">
@@ -448,7 +449,7 @@
   </div>
 </div>
 
-<!-- Modal Plan -->
+
 <div id="modalPlan" class="modal-overlay hidden">
   <div class="modal modal-sm">
     <div class="modal-header">
@@ -473,7 +474,7 @@
   </div>
 </div>
 
-<!-- Modal Antena -->
+
 <div id="modalAntena" class="modal-overlay hidden">
   <div class="modal modal-sm">
     <div class="modal-header">

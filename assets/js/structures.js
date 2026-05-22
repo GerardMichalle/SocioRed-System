@@ -1,220 +1,366 @@
+class Nodo {
+  constructor(valor) {
+    this.valor = valor   
+    this.siguiente  = null    
+  }
+}
 
-// STRUCTURES.JS — Estructuras de Datos SocioRed
-// Árbol BST, Cola (Queue) y Pila (Stack)
+
+// Se usa para: historial de pagos del cliente
+class Stack {
+  constructor() {
+    this.tope  = null   
+    this.size  = 0
+  }
+
+
+  push(valor) {
+    var nuevo   = new Nodo(valor)
+    nuevo.siguiente  = this.tope  
+    this.tope   = nuevo       
+    this.size++
+  }
+
+
+  pop() {
+    if (!this.tope) return null
+    var temp   = this.tope
+    this.tope  = this.tope.siguiente   
+    this.size--
+    return temp.valor
+  }
+
+  peek() {
+    if (!this.tope) return null
+    return this.tope.valor
+  }
+
+  
+  toList() {
+    var lista   = []
+    var actual  = this.tope
+    while (actual) {
+      lista.push(actual.valor)
+      actual = actual.siguiente
+    }
+    return lista
+  }
+
+  limpiar() {
+    this.tope = null
+    this.size = 0
+  }
+}
 
 
 
-// ÁRBOL BINARIO DE BÚSQUEDA (BST)
-// Usado para: búsqueda eficiente de clientes por ID numérico
-// Complejidad: O(log n) búsqueda/inserción (árbol balanceado)
 
-class BSTNode {
-  constructor(key, data) {
-    this.key  = parseInt(key);  // ID numérico
-    this.data = data;           // Objeto cliente
-    this.izquierda = null;
-    this.derecha = null;
+// Se usa para: clientes que deben pagar
+class Queue {
+  constructor() {
+    this.frente = null   
+    this.final  = null   
+    this.size   = 0
+  }
+
+
+  enqueue(valor) {
+    var nuevo = new Nodo(valor)
+    if (!this.frente) {
+      this.frente = nuevo
+      this.final  = nuevo
+    } else {
+      this.final.siguiente = nuevo  
+      this.final      = nuevo   
+    }
+    this.size++
+  }
+
+
+  dequeue() {
+    if (!this.frente) return null
+    var temp    = this.frente
+    this.frente = this.frente.siguiente   
+    this.size--
+    if (!this.frente) this.final = null
+    return temp.valor
+  }
+
+
+  peek() {
+    if (!this.frente) return null
+    return this.frente.valor
+  }
+
+
+  remove(clienteId) {
+    if (!this.frente) return
+
+
+    if (this.frente.valor.clienteId === clienteId) {
+      this.dequeue()
+      return
+    }
+
+
+    var actual = this.frente
+
+    while (actual.siguiente) {
+      if (actual.siguiente.valor.clienteId === clienteId) {
+        if (actual.siguiente === this.final) this.final = actual
+        actual.siguiente = actual.siguiente.siguiente
+        this.size--
+        return
+      }
+      actual = actual.siguiente
+    }
+  }
+
+
+  contiene(clienteId) {
+    var actual = this.frente
+    while (actual) {
+      if (actual.valor.clienteId === clienteId) return true
+      actual = actual.siguiente
+    }
+    return false
+  }
+
+
+  toList() {
+    var lista  = []
+    var actual = this.frente
+    while (actual) {
+      lista.push(actual.valor)
+      actual = actual.siguiente
+    }
+    return lista
+  }
+
+  limpiar() {
+    this.frente = null
+    this.final  = null
+    this.size   = 0
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+//ARBOL BINARIO :))))
+
+// Se usa para: buscar clientes por ID rapido
+
+class NodoBST {
+  constructor(id, cliente) {
+    this.id       = parseInt(id)   // numero del cliente
+    this.cliente  = cliente        // datos del cliente
+    this.izq      = null           // hijos menores
+    this.der      = null           // hijos mayores
   }
 }
 
 class BST {
   constructor() {
-    this.root = null;
-    this.size = 0;
+    this.raiz = null
+    this.size = 0
   }
 
-  insert(key, data) {
-    const node = new BSTNode(key, data);
-    if (!this.root) { this.root = node; this.size++; return; }
-    let curr = this.root;
+  // Insertar cliente en el arbol
+  insert(id, cliente) {
+    var nuevo = new NodoBST(id, cliente)
+
+    if (!this.raiz) {
+      this.raiz = nuevo
+      this.size++
+      return
+    }
+
+    var actual = this.raiz
     while (true) {
-      if (node.key < curr.key) {
-        if (!curr.izquierda) { curr.izquierda = node; this.size++; return; }
-        curr = curr.izquierda;
-      } else if (node.key > curr.key) {
-        if (!curr.derecha) { curr.derecha = node; this.size++; return; }
-        curr = curr.derecha;
+      if (nuevo.id < actual.id) {
+        // Va a la izquierda
+        if (!actual.izq) { actual.izq = nuevo; this.size++; return }
+        actual = actual.izq
+      } else if (nuevo.id > actual.id) {
+        // Va a la derecha
+        if (!actual.der) { actual.der = nuevo; this.size++; return }
+        actual = actual.der
       } else {
-        curr.data = data; // update
-        return;
+        actual.cliente = cliente   // actualizar si ya existe
+        return
       }
     }
   }
 
-  search(key) {
-    let curr = this.root;
-    const k = parseInt(key);
-    while (curr) {
-      if (k === curr.key) return curr.data;
-      curr = k < curr.key ? curr.izquierda : curr.derecha;
+  // Buscar cliente por ID
+  search(id) {
+    var actual = this.raiz
+    var k      = parseInt(id)
+    while (actual) {
+      if (k === actual.id)     return actual.cliente
+      if (k < actual.id)       actual = actual.izq
+      else                     actual = actual.der
     }
-    return null;
+    return null
   }
 
-  delete(key) {
-    this.root = this._deleteNode(this.root, parseInt(key));
+  // Eliminar cliente
+  delete(id) {
+    this.raiz = this._eliminar(this.raiz, parseInt(id))
   }
-  _deleteNode(node, key) {
-    if (!node) return null;
-    if (key < node.key) { node.izquierda = this._deleteNode(node.izquierda, key); }
-    else if (key > node.key) { node.derecha = this._deleteNode(node.derecha, key); }
-    else {
-      this.size--;
-      if (!node.izquierda) return node.derecha;
-      if (!node.derecha) return node.izquierda;
-      let min = node.derecha;
-      while (min.izquierda) min = min.izquierda;
-      node.key  = min.key;
-      node.data = min.data;
-      node.derecha = this._deleteNode(node.derecha, min.key);
-      this.size++;
+
+  _eliminar(nodo, id) {
+    if (!nodo) return null
+    if (id < nodo.id) {
+      nodo.izq = this._eliminar(nodo.izq, id)
+    } else if (id > nodo.id) {
+      nodo.der = this._eliminar(nodo.der, id)
+    } else {
+      this.size--
+      if (!nodo.izq && !nodo.der) return null      // sin hijos
+      if (!nodo.izq) return nodo.der               // solo hijo derecho
+      if (!nodo.der) return nodo.izq               // solo hijo izquierdo
+      // dos hijos: buscar el minimo del lado derecho
+      var min = nodo.der
+      while (min.izq) min = min.izq
+      nodo.id      = min.id
+      nodo.cliente = min.cliente
+      nodo.der     = this._eliminar(nodo.der, min.id)
+      this.size++
     }
-    return node;
+    return nodo
   }
 
-  inOrder() {
-    const result = [];
-    const traverse = (node) => {
-      if (!node) return;
-      traverse(node.izquierda);
-      result.push(node.data);
-      traverse(node.derecha);
-    };
-    traverse(this.root);
-    return result;
-  }
-
+  // Altura del arbol
   height() {
-    const h = (node) => {
-      if (!node) return 0;
-      return 1 + Math.max(h(node.izquierda), h(node.derecha));
-    };
-    return h(this.root);
+    return this._altura(this.raiz)
+  }
+  _altura(nodo) {
+    if (!nodo) return 0
+    var izq = this._altura(nodo.izq)
+    var der = this._altura(nodo.der)
+    return 1 + (izq > der ? izq : der)
   }
 
-  // Retorna representación ASCII del árbol (hasta profundidad 4)
+  // Mostrar arbol en texto
   toAscii() {
-    if (!this.root) return '(árbol vacío)';
-    const lines = [];
-    const fill = (node, prefix, isizquierda) => {
-      if (!node) return;
-      if (node.derecha) fill(node.derecha, prefix + (isizquierda ? '│   ' : '    '), false);
-      lines.push(prefix + (isizquierda ? '└── ' : '┌── ') + String(node.key).padStart(3,'0') + ' ' + (node.data.nombre||''));
-      if (node.izquierda)  fill(node.izquierda,  prefix + (isizquierda ? '    ' : '│   '), true);
-    };
-    if (this.root.derecha) fill(this.root.derecha, '', false);
-    lines.push('● ' + String(this.root.key).padStart(3,'0') + ' ' + (this.root.data.nombre||''));
-    if (this.root.izquierda)  fill(this.root.izquierda,  '', true);
-    return lines.join('\n');
+    if (!this.raiz) return '(arbol vacio)'
+    var lineas = []
+    this._dibujar(this.raiz, '', false, lineas)
+    return lineas.join('\n')
+  }
+  _dibujar(nodo, prefix, esIzq, lineas) {
+    if (!nodo) return
+    if (nodo.der) this._dibujar(nodo.der, prefix + (esIzq ? '│   ' : '    '), false, lineas)
+    lineas.push(prefix + (esIzq ? '└── ' : '┌── ') + String(nodo.id).padStart(3,'0') + ' ' + nodo.cliente.nombre)
+    if (nodo.izq) this._dibujar(nodo.izq, prefix + (esIzq ? '    ' : '│   '), true, lineas)
   }
 }
 
 
-// COLA (QUEUE) — FIFO
-// Usado para: gestión de pagos pendientes
-// El primero en entrar es el primero en ser cobrado
 
-class Queue {
-  constructor() {
-    this.items = [];
-  }
-  enqueue(item) { this.items.push(item); }
-  dequeue()     { return this.items.shift(); }
-  peek()        { return this.items[0]; }
-  isEmpty()     { return this.items.length === 0; }
-  get size()    { return this.items.length; }
-  toArray()     { return [...this.items]; }
-  clear()       { this.items = []; }
-  // Eliminar por clienteId
-  remove(clienteId) {
-    this.items = this.items.filter(i => i.clienteId !== clienteId);
-  }
-}
-
- 
-// PILA (STACK) — LIFO
-// Usado para: historial de pagos por cliente (último al tope)
-
-class Stack {
-  constructor() {
-    this.items = [];
-    this.totalOps = 0;
-  }
-  push(item)   { this.items.push(item); this.totalOps++; }
-  pop()        { return this.items.pop(); }
-  peek()       { return this.items[this.items.length-1]; }
-  isEmpty()    { return this.items.length === 0; }
-  get size()   { return this.items.length; }
-  toArray()    { return [...this.items].reverse(); } // más reciente primero
-  clear()      { this.items = []; }
-}
+const clientesBST = new BST()
+const pagosQueue  = new Queue()
+const pagosStack  = {}   
 
 
-// INSTANCIAS GLOBALES
-
-const clientesBST = new BST();
-const pagosQueue  = new Queue();   // pagos pendientes
-const pagosStack  = {};            // { clienteId: Stack } — historial por cliente
-
-
-// CARGA DE ESTRUCTURAS DESDE STORAGE
 
 function loadStructures() {
-  const clientes = getClientes();
-  const pagos    = getPagos();
+  var clientes = getClientes()
+  var pagos    = getPagos()
 
-  // Reconstruir BST con todos los clientes
-  clientesBST.root = null;
-  clientesBST.size = 0;
-  clientes.forEach(c => clientesBST.insert(c.id, c));
 
-  // Reconstruir Cola con pagos pendientes (ordenados por fecha o por ID)
-  pagosQueue.clear();
-  const pendientes = pagos
-    .filter(p => p.estado === 'Pendiente')
-    .sort((a,b) => a.clienteId.localeCompare(b.clienteId));
-  pendientes.forEach(p => {
-    // Solo un elemento por cliente en la cola
-    if (!pagosQueue.items.find(q => q.clienteId === p.clienteId)) {
-      const cliente = getCliente(p.clienteId);
-      pagosQueue.enqueue({ clienteId: p.clienteId, nombre: cliente?.nombre||'?', pagoId: p.id, mes: p.mes, monto: p.monto });
+  clientesBST.raiz = null
+  clientesBST.size = 0
+  clientes.forEach(c => clientesBST.insert(c.id, c))
+
+
+  var hubocambio = false
+  clientes.forEach(function(c) {
+    if (c.estado === 'Con deuda') {
+      var tienePendiente = false
+      for (var i = 0; i < pagos.length; i++) {
+        if (pagos[i].clienteId === c.id && pagos[i].estado === 'Pendiente') {
+          tienePendiente = true
+          break
+        }
+      }
+      if (!tienePendiente) {
+        var plan = getPlan(c.planId)
+        pagos.push({
+          id:        siguienteId(pagos, 'PAG'),
+          clienteId: c.id,
+          mes:       obtenerMesActual(),
+          monto:     plan ? plan.precio : 0,
+          fecha:     '',
+          estado:    'Pendiente',
+          metodo:    '',
+          obs:       'Generado automaticamente',
+        })
+        hubocambio = true
+      }
     }
-  });
+  })
+  if (hubocambio) setPagos(pagos)
 
-  // Reconstruir Pilas de historial por cliente
-  Object.keys(pagosStack).forEach(k => delete pagosStack[k]);
-  clientes.forEach(c => {
-    pagosStack[c.id] = new Stack();
-  });
-  // Insertar pagos ordenados (más antiguo primero → más nuevo al tope)
-  const pagosSorted = [...pagos].sort((a,b) => (a.fecha||'').localeCompare(b.fecha||''));
-  pagosSorted.forEach(p => {
-    if (pagosStack[p.clienteId]) pagosStack[p.clienteId].push(p);
-    else { pagosStack[p.clienteId] = new Stack(); pagosStack[p.clienteId].push(p); }
-  });
+
+  pagosQueue.limpiar()
+  pagos.forEach(function(p) {
+    if (p.estado === 'Pendiente' && !pagosQueue.contiene(p.clienteId)) {
+      var c = getCliente(p.clienteId)
+      pagosQueue.enqueue({
+        clienteId: p.clienteId,
+        nombre:    c ? c.nombre : '?',
+        mes:       p.mes,
+        monto:     p.monto,
+      })
+    }
+  })
+
+
+  Object.keys(pagosStack).forEach(k => delete pagosStack[k])
+  clientes.forEach(c => { pagosStack[c.id] = new Stack() })
+
+  var pagosOrdenados = pagos.slice().sort(function(a, b) {
+    return (a.fecha || '').localeCompare(b.fecha || '')
+  })
+  pagosOrdenados.forEach(function(p) {
+    if (!pagosStack[p.clienteId]) pagosStack[p.clienteId] = new Stack()
+    pagosStack[p.clienteId].push(p)
+  })
 }
 
-// Obtener historial de pagos de un cliente desde su pila
+
+
+
+
 function getHistorialCliente(clienteId) {
-  const stack = pagosStack[clienteId];
-  return stack ? stack.toArray() : [];
+  var pila = pagosStack[clienteId]
+  return pila ? pila.toList() : []
 }
 
-// Registrar pago: push a pila, quitar de cola si pagó
+
 function registrarPagoEnEstructura(pago) {
-  if (!pagosStack[pago.clienteId]) pagosStack[pago.clienteId] = new Stack();
-  pagosStack[pago.clienteId].push(pago);
+  if (!pagosStack[pago.clienteId]) pagosStack[pago.clienteId] = new Stack()
+  pagosStack[pago.clienteId].push(pago)
   if (pago.estado === 'Pagado') {
-    pagosQueue.remove(pago.clienteId);
+    pagosQueue.remove(pago.clienteId)
   }
 }
 
-// Agregar cliente al BST
 function insertarClienteBST(cliente) {
-  clientesBST.insert(cliente.id, cliente);
+  clientesBST.insert(cliente.id, cliente)
 }
 
-// Eliminar cliente del BST
 function eliminarClienteBST(clienteId) {
-  clientesBST.delete(clienteId);
+  clientesBST.delete(clienteId)
 }
