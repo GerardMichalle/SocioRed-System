@@ -137,6 +137,9 @@ function toggleSidebar() {
 }
 
 function showPage(name) {
+
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) sidebar.classList.remove('open');
   document
     .querySelectorAll(".page")
     .forEach((p) => p.classList.remove("active"));
@@ -243,7 +246,7 @@ function updateDashboard() {
 function renderColaQueue() {
   const colaList = document.getElementById("colaList");
   const badge = document.getElementById("cola-badge");
-  const queue = pagosQueue.toArray();
+  const queue = pagosQueue.toList();
   badge.textContent = queue.length;
   if (!queue.length) {
     colaList.innerHTML = '<div class="empty-msg">✅ Sin pagos pendientes</div>';
@@ -548,13 +551,20 @@ function renderPagos() {
       );
     });
   if (estado) pagos = pagos.filter((p) => p.estado === estado);
-  // Más recientes primero
-  pagos = [...pagos].sort((a, b) =>
-    (b.fecha || "").localeCompare(a.fecha || ""),
-  );
+ 
+
+  
+ // pagos = [...pagos].sort((a, b) =>
+   // (b.id || "").localeCompare(a.id || ""),
+  //);
+
+  
 
   const tbody = document.getElementById("tbodyPagos");
-  tbody.innerHTML = pagos
+
+  
+ tbody.innerHTML = [...pagos]
+    .reverse()
     .map((p) => {
       const c = clientes.find((x) => x.id === p.clienteId);
       const plan = getPlan(c?.planId);
